@@ -1,0 +1,81 @@
+    <h1 class="editProfileTitle">Editar perfil</h1>
+    <div class="container" name="imageSelect" id="imageSelect">
+        <div class="picture" name="imageSelect2" (click)="AbrirSelector()">
+            <img [attr.src]="userImg | secure | async" name="picus" class="picture-src"
+            id="wizardPicturePreview" title="">
+            <input type="file" id="wizard-picture" value= "" class="fotoASeleccionar"  (change)="readURL($event)" name="fotoASeleccionar">
+        </div>
+    </div>
+    
+    <div class="pencilShow" (click)="AbrirSelector()">
+        <i class="fa fa-pencil border border-dark border-lg rounded-pill fa-lg bg-dark" aria-hidden="true"></i>
+    </div>
+    
+    <div class="picture-container">
+        <h6 class="border border-danger rounded-pill bg-dark SignalingTexts">Seleccionar foto de perfil</h6>
+    </div>
+
+    <div class="separator">Cambiar contraseña</div>
+
+    <div class="alert alert-danger errorLabel" role="alert" *ngIf="errorTypes !== 0">
+        <a *ngIf="errorTypes === 1">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Completar el campo de contraseña anterior!
+        </a>
+        <a *ngIf="errorTypes === 2">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Completar el campo de contraseña nueva!
+        </a>
+        <a *ngIf="errorTypes === 3">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Falta confirmar la contraseña!
+        </a>
+        <a *ngIf="errorTypes === 4">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Las contraseñas no coinciden!
+        </a>
+        <a *ngIf="errorTypes === 5">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Ususario o contraseña incorrectos!
+        </a>
+    </div>
+
+    
+    <form (ngSubmit)="change($event.target)">
+    <div class="wrapper fadeInDown">
+
+        <input type="password" class="fadeIn second" name="password" placeholder="Contraseña anterior" [(ngModel)]="oldpassword">
+
+        <input type="password" class="fadeIn third" name="passwordconfirm" placeholder="Contraseña nueva" [(ngModel)]="passwordnew">
+
+        <input type="password" class="fadeIn third" name="passwordconfirm" placeholder="Confirmar contraseña" [(ngModel)]="passwordconfirm">
+
+        <div class="displayButtonsInLine">
+            <input type="button" style="cursor: pointer;" class="fadeIn fourth goback" value="Volver" onclick="history.back()">
+            
+            <input type="submit" style="cursor: pointer;" class="fadeIn fourth accept" value="Aceptar">
+        </div>
+
+
+    </div>
+
+    </form>
+
+
+<script>
+    $(document).ready(function(){
+    $("#wizard-picture").change(function(){
+        readURL(this);
+    });
+});
+function readURL(input) {
+    if (input.files && input.files[0]) {
+        var reader = new FileReader();
+
+        reader.onload = function (e) {
+            $('#wizardPicturePreview').attr('src', e.target.result).fadeIn('slow');
+        }
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+</script>

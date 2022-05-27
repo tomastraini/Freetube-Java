@@ -1,0 +1,122 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container-fluid">
+    <a class="navbar-brand freetube-logo border border-danger rounded-pill pl-1 pr-1"  href="/"> 
+        <img height="50px" width="50px" src="assets/img/logo.webp"> Freetube </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link" (click)="goAbout()">Sobre nosotros</a>
+        </li>
+    </ul>
+
+    <form class="searchVideos d-flex" (ngSubmit)="buscar(busquedavalue)">
+        <input class="form-control me-2"   placeholder="Buscar..."
+        name="busquedavalue" 
+        mdbInput
+
+        
+        [(ngModel)]="busquedavalue"
+        type="search" placeholder="Buscar" aria-label="Search">
+        
+        <button class="btn btn-outline-danger" type="submit">Buscar</button>
+        
+    </form>
+
+    <! –– Vista de usuario sin iniciar sesión ––>
+
+    <button class="signIn btn btn-danger" (click)="login()" *ngIf="loggedIn == false"> 
+        <i class="fa fa-sign-in" aria-hidden="true"></i> Iniciar sesión
+    </button>
+
+    <button class="Register btn btn-danger" (click)="register()" *ngIf="loggedIn == false"> 
+        <i class="fa fa-user-plus" aria-hidden="true"></i> Registrarse
+    </button>
+
+    <! –– Vista de usuario con sesión ––>
+
+
+    <div class="dropdown">
+        <img *ngIf="loggedIn == true" class="profile-image-img" [attr.src]="userImg | secure | async" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+          <li><a class="dropdown-item" (click)="goToProfile()">Ver mi perfil</a></li>
+        </ul>
+      </div>
+   
+    <button class="Upload btn btn-danger" data-bs-toggle="modal" data-bs-target="#subirVideoModal"  *ngIf="loggedIn == true"> 
+        <i class="fa fa-upload" aria-hidden="true"></i> Subir video
+    </button>
+
+    <button class="SignOut btn btn-danger" data-bs-toggle="modal"  *ngIf="loggedIn == true" (click)="logout()"> 
+        <i class="fa fa-sign-out" aria-hidden="true"></i> Cerrar sesión
+    </button>
+    
+    
+
+    
+    
+    </div>
+</div>
+</nav>
+
+
+<div class="modal fade mt-5 float-center" id="subirVideoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Subir videos</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+       
+    <form #postAgregar="ngForm" (ngSubmit)= "onSubmitVid(postAgregar.value)">
+    
+        <div class="shadow bg-warning">
+            <h4 class="text-white text-center">
+                {{ this.mensajerror }}
+            </h4>
+        </div>
+
+        <div class="mb-3 text-center" >
+            <label for="selectitle" class="form-label">Titulo de video</label>
+            <input type="text" class="form-control" id="selectitle" ngModel name="selectitle" placeholder="Título de video">
+        </div>
+
+        
+        <div class="mb-3 text-center" >
+            <label for="selectDesc" class="form-label">Descripcion de video</label>
+            <textarea type="text" class="form-control" id="selectDesc" ngModel name="selectDesc" placeholder="Descripcion de video" cols="30" rows="5">
+            </textarea>
+        </div>
+
+        <div class="modal-body text-center">
+            Seleccionar video
+            <input class="form-control" accept="video/mp4,video/x-m4v,video/*,.mkv" 
+            type="file" id="formFile" ngModel name="inputvid" (change)="onSelectFile($event)">
+        </div>
+
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-danger ">Subir video</button>
+        </div>
+
+    </form>
+    
+    </div>
+    
+</div>
+</div>
+
+
+<app-menu class="menu" [busquedavalue]="busquedavalue" *ngIf="view == '' || view == 'search'"></app-menu>
+
+<app-video-watch class="watchvideo" *ngIf="view == 'watch'"></app-video-watch>
+
+<app-about class="about" *ngIf="view == 'about'"></app-about>
+
+<app-profile class="profile" [busquedavalue]="busquedavalue" *ngIf="view == 'profile'"></app-profile>
+
+<app-editar-perfil class="profile" [busquedavalue]="busquedavalue" *ngIf="view == 'editProfile'"></app-editar-perfil>

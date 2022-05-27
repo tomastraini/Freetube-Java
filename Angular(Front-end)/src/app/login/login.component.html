@@ -1,0 +1,44 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand freetube-logo border border-danger rounded-pill pl-1 pr-1"  href="/"> 
+            <img height="50px" width="50px" src="assets/img/logo.webp"> Freetube </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" (click)="goAbout()">Sobre nosotros</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+      <h2 class="active">  Iniciar sesión  </h2>
+      <a class="inactive underlineHover" (click)="register()" style="cursor: pointer;"> Registrarse </a>
+  
+  
+      <div class="alert alert-danger errorLabel" role="alert" *ngIf="errorTypes !== 0">
+        <a *ngIf="errorTypes === 1">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+            Ususario o contraseña incorrectos!
+        </a>
+    </div>
+      
+      <form (ngSubmit)="login($event.target)">
+        <h6 name = "indicatorl" id="indicatorl" style="color:red;"> </h6>
+        <input type="text" class="fadeIn second" placeholder="Usuario" name="user" [(ngModel)]="user">
+
+        <input type="password" class="fadeIn third" name="password" placeholder="Contraseña" [(ngModel)]="password">
+
+        <input type="submit" style="cursor: pointer;" class="fadeIn fourth" value="Iniciar sesión">
+
+        <button type="button" class="btn btn-danger"  onclick="history.back()" style="position: absolute; top:10; left:10;">Volver</button>
+      </form>
+    </div>
+</div>  

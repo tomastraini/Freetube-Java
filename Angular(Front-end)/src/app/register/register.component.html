@@ -1,0 +1,62 @@
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand freetube-logo border border-danger rounded-pill pl-1 pr-1"  href="/"> 
+            <img height="50px" width="50px" src="assets/img/logo.webp"> Freetube </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="/">Inicio</a>
+                </li>
+                <li class="nav-item">
+                <a class="nav-link" (click)="goAbout()">Sobre nosotros</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="wrapper fadeInDown">
+    <div id="formContent">
+      <h2 class="active">  Registrarse  </h2>
+      <a class="inactive underlineHover" (click)="login()" style="cursor: pointer;"> Iniciar sesión </a>
+      
+      <form (ngSubmit)="register($event.target)">
+        <h6 name = "indicatorl" id="indicatorl" style="color:red;"> </h6>
+
+        <div class="alert alert-danger" role="alert" *ngIf="errorTypes !== 0">
+            <a *ngIf="errorTypes == 1">
+                Se le olvidó ingresar su nombre de usuario
+            </a>
+            <a *ngIf="errorTypes == 2">
+                Se le olvidó ingresar su contraseña
+            </a>
+            <a *ngIf="errorTypes == 3">
+                Se le olvidó ingresar su correo electrónico
+            </a>
+            <a *ngIf="errorTypes == 4">
+                Se le olvidó ingresar su nombre y apellido
+            </a>
+            <a *ngIf="errorTypes == 5">
+                Se le olvidó ingresar su Teléfono
+            </a>
+            <a *ngIf="errorTypes == 6">
+                Correo electrónico no válido
+            </a>
+        </div>        
+        
+        <input type='file' (change)="readURL($event);" />
+        <img *ngIf="imageSrc !== undefined && imageSrc !== null" class="profile-image-img" [src]="imageSrc" id="image" name="image"/>
+        <input type="text" id="user" class="fadeIn second" name="user" placeholder="Usuario">
+        <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña">
+        <input type="text" id="correo" class="fadeIn third" name="correo" placeholder="Correo">
+        <input type="text" id="nombreyapellido" class="fadeIn third" name="nombreyapellido" placeholder="Nombre y apellido">
+        <input type="text" id="telefono" class="fadeIn third" name="telefono" placeholder="Teléfono">
+
+        <input type="submit" style="cursor: pointer;" class="fadeIn fourth" value="Registrarse">
+
+        <button type="button" class="btn btn-danger"  onclick="history.back()" style="position: absolute; top:10; left:10;">Volver</button>
+      </form>
+    </div>
+</div>
