@@ -13,9 +13,10 @@ export class RegisterComponent implements OnInit {
   constructor(public router: Router, public http: HttpClient, private appComponent: AppComponent) { }
 
   imageSrc: any;
-  file: any;
+  file: any = null;
 
   errorTypes = 0;
+  loading = false;
 
 
   ngOnInit(): void
@@ -30,8 +31,7 @@ export class RegisterComponent implements OnInit {
 
   register(event: any): void
   {
-    const formData = new FormData();
-    formData.append('files', this.file);
+
 
     if (event.user.value === null || event.user.value === '' || event.user.value === undefined)
     {
@@ -63,26 +63,68 @@ export class RegisterComponent implements OnInit {
       return;
     }
 
-    if (!(event.user.value.includes('@') && event.user.value.includes('.')))
+    if (!(event.correo.value.includes('@') && event.correo.value.includes('.')))
     {
       this.errorTypes = 6;
       return;
     }
-
-    this.http.post(this.appComponent.apiUrl + 'Users?' +
-    'username=' + event.user.value + '&password=' + event.password.value + '&correo=' + event.correo.value + '&' +
-    'nombreyapellido=' + event.nombreyapellido.value + '&telefono=' + event.telefono.value,
-    this.imageSrc != null ? formData : null,
+    this.loading = true;
+    const formData = new FormData();
+    formData.append('files', this.file);
+    console.log(this.file);
+    
+    if (this.file !== null)
     {
-      observe: 'response',
-      responseType: 'json',
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + sessionStorage.getItem('token')
-      })
-      }).subscribe(
-      (data: any) => {
-        this.router.navigate(['/']);
-      });
+      this.http.post(this.appComponent.apiUrl + 'Users?' +
+      'username=' + event.user.value + '&password=' + event.password.value + '&correo=' + event.correo.value + '&' +
+      'nombreyapellido=' + event.nombreyapellido.value + '&telefono=' + event.telefono.value,
+      formData,
+      {
+        observe: 'response',
+        responseType: 'json',
+        headers: new HttpHeaders({
+          Authorization: 'Bearer ' + sessionStorage.getItem('token')
+        },
+        )
+        }).subscribe(
+        (data: any) => {
+  
+          this.router.navigate(['/']);
+        });
+    }
+    else
+    {
+      this.http.post(this.appComponent.apiUrl + 'Users/withOutImage?' +
+      'username=' + event.user.value + '&password=' + event.password.value + '&correo=' + event.correo.value + '&' +
+      'nombreyapellido=' + event.nombreyapellido.value + '&telefono=' + event.telefono.value,
+      null,
+      {
+        observe: 'response',
+        responseType: 'json',
+        headers: new HttpHeaders({
+          Authorization: 'Bearer ' + sessionStorage.getItem('token')
+        },
+        )
+        }).subscribe(
+        (data: any) => {
+          this.http.post(this.appComponent.apiUrl + 'Users/encrypt?pass=' + event.password.value, null, {
+            observe: 'response',
+            responseType: 'text',
+            headers: new HttpHeaders({
+              Authorization: 'Bearer ' + sessionStorage.getItem('token')
+            },
+            )
+            }).subscribe(
+            (dataEncrypt: any) => {
+              sessionStorage.setItem('x', data.body.usuario);
+              sessionStorage.setItem('y', dataEncrypt.body);
+              sessionStorage.setItem('m', data.body.id_usuario)
+              this.router.navigate(['/']);
+            });
+        });
+
+    }
+
   }
 
   readURL(event: any): void

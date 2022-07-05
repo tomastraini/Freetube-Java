@@ -46,8 +46,12 @@
 
 .picture-src{
     width: 100%;
-    
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-top: 2%;
 }
+
 
 .SignalingTexts
 {
@@ -58,6 +62,29 @@
     top: 5%; 
     text-align: center; 
 }
+
+.acceptChange
+{
+  margin: 0 auto;
+  margin-left: 47.4%;
+  margin-bottom: 2%;
+}
+
+.clearAndAccept
+{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  margin-left: 2%;
+  margin-bottom: 2%;
+}
+
+.limp
+{
+  margin-left: 1%;
+}
+
 
 .separator {
     display: flex;

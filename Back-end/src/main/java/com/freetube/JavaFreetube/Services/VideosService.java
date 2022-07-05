@@ -1,14 +1,12 @@
 package com.freetube.JavaFreetube.Services;
 
 import com.freetube.JavaFreetube.DTOs.VideosDTO;
+import com.freetube.JavaFreetube.Models.*;
 import com.freetube.JavaFreetube.Models.DriveModels.DriveAuthGetter;
 import com.freetube.JavaFreetube.Models.DriveModels.DriveAuthResponse;
 import com.freetube.JavaFreetube.Models.DriveModels.DriveVideos;
 import com.freetube.JavaFreetube.Models.DriveModels.Files;
-import com.freetube.JavaFreetube.Models.Likes;
-import com.freetube.JavaFreetube.Models.Usuarios;
-import com.freetube.JavaFreetube.Models.Videos;
-import com.freetube.JavaFreetube.Models.ViewedVideos;
+import com.freetube.JavaFreetube.Repositories.CommentsRepo;
 import com.freetube.JavaFreetube.Repositories.LikesRepo;
 import com.freetube.JavaFreetube.Repositories.UsuariosRepo;
 import com.freetube.JavaFreetube.Repositories.VideosRepo;
@@ -27,6 +25,12 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+
+import org.bytedeco.javacv.FFmpegFrameGrabber;
+import org.bytedeco.javacv.Frame;
+import org.bytedeco.javacv.FrameGrabber;
+import org.bytedeco.javacv.Java2DFrameConverter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -34,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -46,6 +51,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.imageio.ImageIO;
 
 import com.google.api.services.drive.model.File;
 
@@ -66,7 +72,7 @@ public class VideosService implements IVideosService
 
     @Value("${client-secret}")
     public String clientsecret;
-    
+
     @Autowired
     public VideosRepo repo;
 
@@ -78,6 +84,9 @@ public class VideosService implements IVideosService
 
     @Autowired
     public ViewedVideosRepo viewsRepo;
+
+    @Autowired
+    public CommentsRepo commentsRepo;
 
     /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     private static final String APPLICATION_NAME = "Google Drive API Java Quickstart";
@@ -144,7 +153,7 @@ public class VideosService implements IVideosService
                         .build();
 
                 List<File> result = drive.files().list()
-                        .setFields("nextPageToken, files(id, name, kind, mimeType)")
+                        .setFields("nextPageToken, files(id, name, kind, mimeType, size)")
                         .execute().getFiles();
 
                 if (result.isEmpty()) {
@@ -162,7 +171,7 @@ public class VideosService implements IVideosService
                                         video.description,
                                         usuarios.stream().filter(u -> u.id_usuario == video.id_user)
                                                 .findFirst().get().usuario,
-                                        likes.stream().filter(l -> l.id_video == video.id_video 
+                                        likes.stream().filter(l -> l.id_video == video.id_video
                                                              && l.liked)
                                                              .count(),
                                         likes.stream().filter(l -> l.id_video == video.id_video
@@ -171,7 +180,9 @@ public class VideosService implements IVideosService
                                         views.stream().filter(v -> v.id_video == video.id_video)
                                                 .count(),
                                         video.fecha_carga,
-                                        video.id_user));
+                                        video.id_user,
+                                        file.getSize().toString(),
+                                        video.portray_id_drive));
                             }
                         }
                     }
@@ -182,6 +193,35 @@ public class VideosService implements IVideosService
                 System.out.println(e.getMessage());
             }
         }
+        Collections.sort(response, new Comparator<VideosDTO>() {
+            @Override
+            public int compare(VideosDTO o1, VideosDTO o2) {
+                if(o1.likes - o1.dislikes > o2.likes - o2.dislikes)
+                {
+                    return -1;
+                }
+                else if(o1.likes - o1.dislikes < o2.likes - o2.dislikes)
+                {
+                    return 1;
+                }
+                else
+                {
+                    if(o1.views > o2.views)
+                    {
+                        return -1;
+                    }
+                    else if(o1.views < o2.views)
+                    {
+                        return 1;
+                    }
+                    else
+                    {
+                        return 0;
+                    }
+                }
+            }
+        });
+
         return response;
     }
 
@@ -203,7 +243,7 @@ public class VideosService implements IVideosService
                     .build();
 
             List<File> result = drive.files().list()
-                    .setFields("nextPageToken, files(id, name, kind, mimeType)")
+                    .setFields("nextPageToken, files(id, name, kind, mimeType, size)")
                     .execute().getFiles();
 
             if (result.isEmpty()) {
@@ -221,7 +261,7 @@ public class VideosService implements IVideosService
                                     video.description,
                                     usuarios.stream().filter(u -> u.id_usuario == video.id_user)
                                             .findFirst().get().usuario,
-                                    likes.stream().filter(l -> l.id_video == video.id_video 
+                                    likes.stream().filter(l -> l.id_video == video.id_video
                                                          && l.liked)
                                                          .count(),
                                     likes.stream().filter(l -> l.id_video == video.id_video
@@ -230,7 +270,9 @@ public class VideosService implements IVideosService
                                     views.stream().filter(v -> v.id_video == video.id_video)
                                             .count(),
                                     video.fecha_carga,
-                                    video.id_user);
+                                    video.id_user,
+                                    file.getSize().toString(),
+                                    video.portray_id_drive);
                         }
                     }
                 }
@@ -240,7 +282,7 @@ public class VideosService implements IVideosService
         {
             System.out.println(e.getMessage());
         }
-            
+
         return response;
     }
 
@@ -346,8 +388,7 @@ public class VideosService implements IVideosService
 
     @Override
     public Videos insertVideo(MultipartFile file, String title, String description, int id_user)
-            throws URISyntaxException, IOException, GeneralSecurityException
-    {
+            throws URISyntaxException, IOException, GeneralSecurityException, FrameGrabber.Exception {
         Drive drive = new Drive.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JSON_FACTORY, getCredentials(GoogleNetHttpTransport.newTrustedTransport()))
@@ -365,8 +406,33 @@ public class VideosService implements IVideosService
         File result = drive.files().create(fileMetadata, mediaContent)
                 .setFields("id")
                 .execute();
+
+        Java2DFrameConverter converter = new Java2DFrameConverter();
+        FFmpegFrameGrabber g = new FFmpegFrameGrabber(newFile);
+        g.setFormat("mp4");
+        g.start();
+
+        java.io.File thumb = new java.io.File(tmpdir + "/thumb.jpg");
+
+        for(int i = 0; i < 50; i++)
+        {
+            BufferedImage bufferedImage = converter.getBufferedImage(g.grab());
+            if(bufferedImage != null)
+                ImageIO.write(bufferedImage, "jpg", thumb);
+        }
+        
+        g.stop();
+
+        FileContent mediaContent2 = new FileContent("image/jpeg", thumb);
+        fileMetadata.setName(file.getOriginalFilename() + ".jpg");
+
+        File result2 = drive.files().create(fileMetadata, mediaContent2)
+                .setFields("id")
+                .execute();
+
+        thumb.delete();
         newFile.delete();
-                
+
         Calendar cal = Calendar.getInstance();
         Videos video = new Videos();
 
@@ -375,6 +441,7 @@ public class VideosService implements IVideosService
         video.id_user = id_user;
         video.fecha_carga = cal.getTime();
         video.id_drive = result.getId();
+        video.portray_id_drive = result2.getId();
 
         repo.save(video);
         return video;
@@ -400,19 +467,70 @@ public class VideosService implements IVideosService
     public void deleteVideo(String id)
             throws URISyntaxException, IOException, GeneralSecurityException
     {
+        Videos videoToDelete = repo.findAll()
+                .stream().filter(x -> x.id_drive.contains(id)).findFirst().orElse(null);
+        
+        if(videoToDelete == null){ return; }
+        List<Comments> commentsRelated = commentsRepo.findAll()
+                .stream().filter(x -> x.id_video == videoToDelete.id_video).collect(Collectors.toList());
+        List<ViewedVideos> viewsRelated = viewsRepo.findAll()
+                .stream().filter(x -> x.id_video == videoToDelete.id_video).collect(Collectors.toList());
+        List<Likes> likesRelated = likesRepo.findAll().stream().filter(
+                x -> x.id_video == videoToDelete.id_video).collect(Collectors.toList());
+        
+        
+
         Drive drive = new Drive.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JSON_FACTORY, getCredentials(GoogleNetHttpTransport.newTrustedTransport()))
                 .setApplicationName(APPLICATION_NAME)
                 .build();
+        for(Comments comment : commentsRelated)
+        {
+            commentsRepo.delete(comment);
+        }
+        for(ViewedVideos view : viewsRelated)
+        {
+            viewsRepo.delete(view);
+        }
+        for(Likes like : likesRelated)
+        {
+            likesRepo.delete(like);
+        }
+        repo.delete(videoToDelete);
+        repo.flush();
 
-        drive.files().delete(id).execute();
-        Videos videoToDelete = repo.findAll()
-                .stream().filter(x -> x.id_drive == id).findFirst().get();
         if(videoToDelete.id_drive != null)
         {
-            repo.delete(videoToDelete);
+            List<File> result = drive.files().list()
+                    .setFields("nextPageToken, files(id, name, kind, mimeType)")
+                    .execute().getFiles();
+            
+            if (!result.isEmpty()) {
+                for (File file : result) {
+                    if(file.getId().equals(videoToDelete.id_drive))
+                    {
+                        drive.files().delete(videoToDelete.id_drive).execute();
+                    }
+                }
+            }
         }
+        if(videoToDelete.portray_id_drive != null)
+        {
+            List<File> result = drive.files().list()
+                    .setFields("nextPageToken, files(id, name, kind, mimeType)")
+                    .execute().getFiles();
+            if (!result.isEmpty()) {
+                for (File file : result) {
+                    if(file.getId().equals(videoToDelete.portray_id_drive))
+                    {
+                        drive.files().delete(videoToDelete.portray_id_drive).execute();
+                    }
+                }
+            }
+        }
+
+
     }
 
     public int getIfLiked(int id_video, int id_user)
@@ -488,7 +606,7 @@ public class VideosService implements IVideosService
                         .build();
 
                 List<File> result = drive.files().list()
-                        .setFields("nextPageToken, files(id, name, kind, mimeType)")
+                        .setFields("nextPageToken, files(id, name, kind, mimeType, size)")
                         .execute().getFiles();
 
                 if (result.isEmpty()) {
@@ -515,7 +633,9 @@ public class VideosService implements IVideosService
                                         views.stream().filter(v -> v.id_video == video.id_video)
                                                 .count(),
                                         video.fecha_carga,
-                                        video.id_user));
+                                        video.id_user,
+                                        file.getSize().toString(),
+                                        video.portray_id_drive));
                             }
                         }
                     }

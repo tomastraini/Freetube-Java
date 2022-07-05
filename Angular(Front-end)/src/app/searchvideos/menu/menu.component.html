@@ -1,22 +1,20 @@
-<!-- create a spinner loader using bootstrap  -->
 <div *ngIf="!HasLoaded" class="loadingScreen">
   <div class="spinner-border text-danger" role="status">
       <span class="sr-only"></span>
   </div>
   <label>
-    Cargando página...
+    {{LoadingMessage}}
   </label>
 </div>
 
-<div *ngIf="HasLoaded">
-  <mat-grid-list cols="4" rowHeight="1.5:1" class="matGrid">
+<div [style.visibility]="(HasLoaded) ? 'visible' :  'hidden'">
+  <mat-grid-list cols="4" rowHeight="1.5:1" class="matGrid fadeIn">
     <mat-grid-tile *ngFor="let video of videos | tableFilter: busquedavalue">
       
-      <div class="vidBackground shadow" (click)="openVid($event, video)" (auxclick)="openVid($event, video)">
+      <div class="vidBackground fadeIn mb-5" (click)="openVid($event, video)" (auxclick)="openVid($event, video)">
   
-        <video height="200" width="400" class="ml-2 mt-3" 
+        <img height="200" width="400" class="ml-2 mt-3 videoThumbnail"
         [attr.src]="video.linksrc | secure | async">
-        </video>
   
         <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length > 24">
           {{ video.title?.substring(0,22) }}
@@ -38,8 +36,10 @@
     </mat-grid-tile>
   </mat-grid-list>
   
-  <button *ngIf="videosOriginal !== null && videosOriginal.length > 8 && !(amountSliced === videosOriginal.length)" (click)="expandView()"
+  <button *ngIf="(videosOriginal !== null && videosOriginal !== undefined) && videosOriginal.length > 8 && !(amountSliced === videosOriginal.length)" (click)="expandView()"
     class="btn btn-dark centerViewMore"> Ver más <i class="fa fa-arrow-down" aria-hidden="true"></i> </button>
+
+
 </div>
 
 

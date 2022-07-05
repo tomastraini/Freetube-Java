@@ -1,5 +1,6 @@
 package com.freetube.JavaFreetube.Controllers.JWTController;
 
+import java.util.Date;
 import java.util.Objects;
 
 import com.freetube.JavaFreetube.Configurations.JwtTokenUtil;
@@ -21,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import static com.freetube.JavaFreetube.Configurations.JwtTokenUtil.JWT_TOKEN_VALIDITY;
 
 
 @RestController
@@ -49,9 +52,19 @@ public class JwtAuthenticationController {
 				.loadUserByUsername(authenticationRequest.getUsername());
 
 		final String token = jwtTokenUtil.generateToken(userDetails);
+		final String roles = String.valueOf(userDetails.getAuthorities());
+		
 		final int id_usuario = getID(userDetails.getUsername());
 
-		return ResponseEntity.ok(new JwtResponse(token, String.valueOf(id_usuario)));
+		String expires = JWT_TOKEN_VALIDITY / 60 + " minutes";
+
+		String tokenGivenAt = new Date().toString();
+		String tokenExpiresAt = jwtTokenUtil.getExpirationDateFromToken(token).toString();
+		tokenGivenAt = tokenGivenAt.substring(11, 19);
+		tokenExpiresAt = tokenExpiresAt.substring(11, 19);
+
+		return ResponseEntity.ok(new JwtResponse(token, String.valueOf(id_usuario),
+				roles, expires, tokenGivenAt, tokenExpiresAt));
 	}
 
 	private void authenticate(String username, String password) throws Exception {

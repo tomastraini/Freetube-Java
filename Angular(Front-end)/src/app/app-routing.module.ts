@@ -12,7 +12,6 @@ import { EditarPerfilComponent } from './searchvideos/editar-perfil/editar-perfi
 
 const routes: Routes = [
   {
-    // pass the MenuComponent and the SearchvideosComponent
     path: '',
     component: SearchvideosComponent,
     children:
@@ -38,7 +37,7 @@ const routes: Routes = [
         component: ProfileComponent
       },
       {
-        path: 'editProfile',
+        path: 'editProfile/:id',
         component: EditarPerfilComponent
       },
     ]
@@ -51,11 +50,10 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent
   },
-
   {
     path: '**',
     component: PagnotfoundComponent
-  },
+  }
 ];
 
 @NgModule({

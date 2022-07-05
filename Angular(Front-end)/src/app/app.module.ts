@@ -22,6 +22,7 @@ import {MatSelectModule} from '@angular/material/select';
 import { AboutComponent } from './searchvideos/about/about.component';
 import { ProfileComponent } from './searchvideos/profile/profile.component';
 import { EditarPerfilComponent } from './searchvideos/editar-perfil/editar-perfil.component';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { EditarPerfilComponent } from './searchvideos/editar-perfil/editar-perfi
     HttpClientModule,
     FormsModule,
     MatGridListModule,
-    MatSelectModule
+    MatSelectModule,
+    MatProgressBarModule
   ],
   providers: [],
   bootstrap: [AppComponent]

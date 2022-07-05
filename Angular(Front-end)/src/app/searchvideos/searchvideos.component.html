@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fadeIn">
 <div class="container-fluid">
     <a class="navbar-brand freetube-logo border border-danger rounded-pill pl-1 pr-1"  href="/"> 
         <img height="50px" width="50px" src="assets/img/logo.webp"> Freetube </a>
@@ -19,13 +19,9 @@
         <input class="form-control me-2"   placeholder="Buscar..."
         name="busquedavalue" 
         mdbInput
-
-        
         [(ngModel)]="busquedavalue"
         type="search" placeholder="Buscar" aria-label="Search">
-        
         <button class="btn btn-outline-danger" type="submit">Buscar</button>
-        
     </form>
 
     <! –– Vista de usuario sin iniciar sesión ––>
@@ -45,9 +41,10 @@
         <img *ngIf="loggedIn == true" class="profile-image-img" [attr.src]="userImg | secure | async" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
           <li><a class="dropdown-item" (click)="goToProfile()">Ver mi perfil</a></li>
+          <li><a class="dropdown-item" (click)="goToEditProfile()">Modificar perfil</a></li>
         </ul>
-      </div>
-   
+    </div>
+
     <button class="Upload btn btn-danger" data-bs-toggle="modal" data-bs-target="#subirVideoModal"  *ngIf="loggedIn == true"> 
         <i class="fa fa-upload" aria-hidden="true"></i> Subir video
     </button>
@@ -67,18 +64,29 @@
 
 <div class="modal fade mt-5 float-center" id="subirVideoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
+      <div class="modal-content bg-dark">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Subir videos</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-       
+        <div *ngIf="loadingUpload" class="loadingScreenModal">
+            <div class="spinner-border text-danger" role="status">
+                <span class="sr-only"></span>
+            </div>
+            <label>
+                Subiendo video, aguarde...
+                <mat-progress-bar mode="indeterminate" [color]="'warn'">
+
+                </mat-progress-bar>
+            </label>
+        </div>
+          
     <form #postAgregar="ngForm" (ngSubmit)= "onSubmitVid(postAgregar.value)">
     
-        <div class="shadow bg-warning">
-            <h4 class="text-white text-center">
+        <div class="alert alert-danger" role="alert" *ngIf="errorformat">
+            <label class="mensajeError">
                 {{ this.mensajerror }}
-            </h4>
+            </label>
         </div>
 
         <div class="mb-3 text-center" >
@@ -117,6 +125,6 @@
 
 <app-about class="about" *ngIf="view == 'about'"></app-about>
 
-<app-profile class="profile" [busquedavalue]="busquedavalue" *ngIf="view == 'profile'"></app-profile>
+<app-profile class="profile" [busquedavalue]="busquedavalue" *ngIf="view.includes('/profile/')"></app-profile>
 
-<app-editar-perfil class="profile" [busquedavalue]="busquedavalue" *ngIf="view == 'editProfile'"></app-editar-perfil>
+<app-editar-perfil class="profile" [busquedavalue]="busquedavalue" *ngIf="view.includes('editProfile/')"></app-editar-perfil>

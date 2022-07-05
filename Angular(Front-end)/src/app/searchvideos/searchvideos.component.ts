@@ -32,6 +32,7 @@ export class SearchvideosComponent implements OnInit {
 
   userImg = '';
   loggedIn = false;
+  loadingUpload = false;
 
   ngOnInit(): void
   {
@@ -44,11 +45,10 @@ export class SearchvideosComponent implements OnInit {
       this.userImg = this.appComponent.apiUrl + 'Users?id_user=' + sessionStorage.getItem('m');
     }
     this.view = this.router.url;
-    if(this.view === '/'){ this.view = ''; }
+    if (this.view === '/'){ this.view = ''; }
     if (this.router.url.includes('/watch'))
     {
       this.view = 'watch';
-
       this.id = this.router.url.split('/')[2];
     }
   }
@@ -74,25 +74,35 @@ export class SearchvideosComponent implements OnInit {
     if (data.selectitle === ''){
       this.errorformat = true;
       this.mensajerror = 'Rellenar título!';
-    }else{
-      const formData = new FormData();
-      formData.append('files', this.url);
-
-      const httpOptions = {
-        headers: new HttpHeaders({
-            Authorization: 'Bearer ' + sessionStorage.getItem('token'),
-        })
-      };
-      const username = sessionStorage.getItem('m');
-      this.http.post(this.appComponent.apiUrl + 'Videos?title=' + data.selectitle
-      + '&description=' + data.selectDesc + '&id_user=' + username, formData, httpOptions).subscribe(
-        (Response) => {
-          window.location.reload();
-        },
-        (error) => {
-        }
-      );
+      return;
     }
+    if (this.url.size > 100000000)
+    {
+      this.errorformat = true;
+      this.mensajerror = 'El archivo es demasiado grande! (Máximo 100MB)';
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('files', this.url);
+    const videoWeight = this.url.size;
+    this.loadingUpload = true;
+
+
+    const httpOptions = {
+      headers: new HttpHeaders({
+          Authorization: 'Bearer ' + sessionStorage.getItem('token'),
+      })
+    };
+    const username = sessionStorage.getItem('m');
+    this.http.post(this.appComponent.apiUrl + 'Videos?title=' + data.selectitle
+    + '&description=' + data.selectDesc + '&id_user=' + username, formData, httpOptions).subscribe(
+      (Response) => {
+        window.location.reload();
+      },
+      (error) => {
+      }
+    );
   }
   login(): void
   {
@@ -120,5 +130,10 @@ export class SearchvideosComponent implements OnInit {
   goToProfile(): void
   {
     window.location.href = '/profile/' + sessionStorage.getItem('m');
+  }
+
+  goToEditProfile(): void
+  {
+    window.location.href = '/editProfile/' + sessionStorage.getItem('m');
   }
 }

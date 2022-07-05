@@ -16,14 +16,16 @@ public class Videos
     public int id_user;
     public Date fecha_carga;
     public String id_drive;
+    public String portray_id_drive;
 
-    public Videos(int id_video, String paths, String title, String description, int id_user, Date fecha_carga, String id_drive) {
+    public Videos(int id_video, String paths, String title, String description, int id_user, Date fecha_carga, String id_drive, String portray_id_drive) {
         this.id_video = id_video;
         this.title = title;
         this.description = description;
         this.id_user = id_user;
         this.fecha_carga = fecha_carga;
         this.id_drive = id_drive;
+        this.portray_id_drive = portray_id_drive;
     }
 
     public Videos() {
@@ -75,5 +77,13 @@ public class Videos
 
     public void setFecha_carga(Date fecha_carga) {
         this.fecha_carga = fecha_carga;
+    }
+
+    public String getPortray_id_drive() {
+        return portray_id_drive;
+    }
+
+    public void setPortray_id_drive(String portray_id_drive) {
+        this.portray_id_drive = portray_id_drive;
     }
 }

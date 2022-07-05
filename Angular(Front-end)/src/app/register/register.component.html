@@ -1,22 +1,3 @@
-<nav class="navbar navbar-expand-lg navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand freetube-logo border border-danger rounded-pill pl-1 pr-1"  href="/"> 
-            <img height="50px" width="50px" src="assets/img/logo.webp"> Freetube </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="/">Inicio</a>
-                </li>
-                <li class="nav-item">
-                <a class="nav-link" (click)="goAbout()">Sobre nosotros</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
 <div class="wrapper fadeInDown">
     <div id="formContent">
       <h2 class="active">  Registrarse  </h2>
@@ -24,7 +5,14 @@
       
       <form (ngSubmit)="register($event.target)">
         <h6 name = "indicatorl" id="indicatorl" style="color:red;"> </h6>
-
+        <div *ngIf="loading">
+            <div class="spinner-border text-danger" role="status" >
+              <span class="sr-only">Loading...</span>
+            </div>
+            <label class="text-dark comprobandoLoading">
+              Comprobando datos...
+            </label>
+          </div>
         <div class="alert alert-danger" role="alert" *ngIf="errorTypes !== 0">
             <a *ngIf="errorTypes == 1">
                 Se le olvidó ingresar su nombre de usuario
@@ -48,10 +36,10 @@
         
         <input type='file' (change)="readURL($event);" />
         <img *ngIf="imageSrc !== undefined && imageSrc !== null" class="profile-image-img" [src]="imageSrc" id="image" name="image"/>
-        <input type="text" id="user" class="fadeIn second" name="user" placeholder="Usuario">
-        <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña">
-        <input type="text" id="correo" class="fadeIn third" name="correo" placeholder="Correo">
         <input type="text" id="nombreyapellido" class="fadeIn third" name="nombreyapellido" placeholder="Nombre y apellido">
+        <input type="text" id="correo" class="fadeIn third" name="correo" placeholder="Correo">
+        <input type="text" id="user" class="fadeIn second" name="user" placeholder="Nombre de usuario">
+        <input type="password" id="password" class="fadeIn third" name="password" placeholder="Contraseña">
         <input type="text" id="telefono" class="fadeIn third" name="telefono" placeholder="Teléfono">
 
         <input type="submit" style="cursor: pointer;" class="fadeIn fourth" value="Registrarse">
