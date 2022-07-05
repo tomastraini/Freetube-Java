@@ -1,63 +1,93 @@
-<div class="sutileBackground">
-    <img class="profile-image-img" [attr.src]="userImg | secure | async" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-    <h1 class="userName">{{ userName }}</h1>
-    <button type="button"  class="btn btn-danger modifyProfile" (click)="goEditProfile()"> 
-      <i class="fa fa-pencil" aria-hidden="true"></i>
-    </button>
+
+<div *ngIf="!loading" class="loadingScreen">
+  <div class="spinner-border text-danger" role="status">
+      <span class="sr-only"></span>
+  </div>
+  <label>
+    Cargando videos...
+  </label>
 </div>
-<hr>
 
-<mat-grid-list cols="4" rowHeight="1.5:1" class="matGrid" (window:resize)="onResize($event)">
-    <mat-grid-tile *ngFor="let video of videos | tableFilter: busquedavalue">
-      <div class="vidBackground shadow" (click)="openVid($event, video)" (auxclick)="openVid($event, video)">
-  
-        <video height="200" width="400" class="ml-2 mt-3" 
-        [attr.src]="video.linksrc | secure | async">
-        </video>
-  
-        <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length > 24">
-          {{ video.title?.substring(0,22) }}
-        </h3>
-  
-        <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length <= 24">
-          {{ video.title }}
-        </h3>
-  
-        <div class="vidUser">
-          <img class="vidUserIMG" [attr.src]="video.imglinksrc | secure | async">
-  
-          <p  class="text-light text-start ml-5 vidUserText">
-            {{ video.usern }}
-          </p>
-        </div>
-      </div>
-      <button type="button" *ngIf="permissionToDelete" class="btn btn-danger btnTrash" 
-      data-bs-toggle="modal" data-bs-target="#BorrarVideoModal" 
-      (click)="selectedVideoDelete(video.id_video)"> <i class="fa fa-trash" aria-hidden="true"></i> </button>
-    </mat-grid-tile>
-  </mat-grid-list>
-  
-  <div *ngIf="permissionToDelete" class="modal fade mt-5 float-center" id="BorrarVideoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
+<div class="entireProfile" [style.visibility]="loading">
+    <div class="bg-dark pb-5 " [style.visibility]="loading" [class.fadeIn]="loading">
+      <img class="profile-image-img" data-bs-target="#profileIamgeExpand" data-bs-toggle="modal"
+      [attr.src]="userImg | secure | async" aria-expanded="false">
+      <h1 class="userName">{{ userName }}</h1>
+    </div>
+  <hr>
 
-        <div>
-          <p [(ngModel)]="vidToDelete" (value)="vidToDelete">
-          </p>
-        </div>
-
-        <div class="modal-header">
-          <h5 class="modal-title titleAsk" id="exampleModalLabel">Seguro que quiere borrar el video?</h5>
-        </div>
+  <div *ngIf="loading">
+    <mat-grid-list cols="4" rowHeight="1.5:1" class="matGrid fadeIn">
+      <mat-grid-tile *ngFor="let video of videos | tableFilter: busquedavalue">
         
-        <div class="modal-body text-center">
-          <span class="filler"></span>
+        <div class="vidBackground shadow" (click)="openVid($event, video)" (auxclick)="openVid($event, video)">
+    
+          <img height="200" width="400" class="ml-2 mt-3 videoThumbnail" 
+          [attr.src]="video.linksrc | secure | async">
+    
+          <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length > 24">
+            {{ video.title?.substring(0,22) }}
+          </h3>
+    
+          <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length <= 24">
+            {{ video.title }}
+          </h3>
+    
+          <div class="vidUser">
+            <img class="vidUserIMG" [attr.src]="video.imglinksrc | secure | async">
+    
+            <p  class="text-light text-start ml-5 vidUserText">
+              {{ video.usern }}
+            </p>
+          </div>
         </div>
+        <button type="button" *ngIf="permissionToDelete" class="btn btn-danger btnTrash" 
+        data-bs-toggle="modal" data-bs-target="#BorrarVideoModal" 
+        (click)="selectedVideoDelete(video.id_video)"> <i class="fa fa-trash" aria-hidden="true"></i> </button>
+      </mat-grid-tile>
+    </mat-grid-list>
+    
+    <div *ngIf="permissionToDelete" class="modal fade mt-5 float-center" id="BorrarVideoModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-        <div class="modal-footer">
-          <button type="button" data-bs-dismiss="modal" class="btn btn-dark btnCancel" aria-label="Close"> Cancelar </button>
-          <button type="submit" class="btn btn-danger btnConfirm" (click)="deleteVideo()"> Eliminar </button>
+          <div>
+            <p [(ngModel)]="vidToDelete" (value)="vidToDelete">
+            </p>
+          </div>
+
+          <div class="modal-header">
+            <h5 class="modal-title titleAsk" id="exampleModalLabel">Seguro que quiere borrar el video?</h5>
+          </div>
+          
+          <div class="modal-body text-center">
+            <span class="filler"></span>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" data-bs-dismiss="modal" class="btn btn-dark btnCancel" aria-label="Close"> Cancelar </button>
+            <button type="submit" class="btn btn-danger btnConfirm" (click)="deleteVideo()"> Eliminar </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+</div>
+
+
+<div class="modal fade mt-5 float-center fade bd-example-modal-xl" id="profileIamgeExpand" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl verticallyHeight">
+    <div class="modal-content bg-dark verticallyHeight">
+      <div class="modal-header">
+        <h5 class="modal-title titleAsk ml-5" id="exampleModalLabel">Perfil de {{ userName }}</h5>
+      </div>
+      <div class="modal-body text-center">
+        <img class="modalImageExpanded" [attr.src]="userImg | secure | async">
+      </div>
+      <div class="modal-footer">
+        <button type="button" data-bs-dismiss="modal" class="btn btn-danger" aria-label="Close"> Cerrar </button>
+      </div>
+    </div>
+  </div>
+</div>

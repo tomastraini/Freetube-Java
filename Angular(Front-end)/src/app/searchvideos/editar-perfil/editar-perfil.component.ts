@@ -14,12 +14,24 @@ export class EditarPerfilComponent implements OnInit {
   passwordnew: any;
   passwordconfirm: any;
   errorTypes = 0;
+  userImgisEmpty: any = false;
 
-  constructor(private appComponent: AppComponent, public http: HttpClient) { }
+  constructor(private appComponent: AppComponent, public http: HttpClient) 
+  {
+    setInterval(() => {
+      this.userImgisEmpty = document.getElementById('wizardPicturePreview')?.getAttribute("src")
+      if(this.userImgisEmpty)
+      {
+        clearInterval(this.userImgisEmpty);
+      }
+    }, 1000);
+  }
 
   userImg = '';
+  userImgOnChangedSRC: any;
 
-  ngOnInit(): void {
+  ngOnInit(): void
+  {
     if (sessionStorage.getItem('m') !== undefined && sessionStorage.getItem('m') !== null)
     {
       this.userImg = this.appComponent.apiUrl + 'Users?id_user=' + sessionStorage.getItem('m');
@@ -30,6 +42,13 @@ export class EditarPerfilComponent implements OnInit {
     }
   }
 
+
+  clearImage(): void
+  {
+    this.userImgOnChangedSRC = null;
+    this.file = null;
+  }
+
   readURL(event: any): void
   {
     if (event.target.files && event.target.files[0]) {
@@ -37,6 +56,9 @@ export class EditarPerfilComponent implements OnInit {
 
         const reader = new FileReader();
         reader.readAsDataURL(this.file);
+        reader.onload = e => this.userImgOnChangedSRC = reader.result;
+        console.log(this.userImgOnChangedSRC);
+        console.log(this.userImg);
     }
   }
 
@@ -47,13 +69,13 @@ export class EditarPerfilComponent implements OnInit {
     input?.click();
   }
 
-  change(event: any): void
+  changeImageAlone(): void
   {
     if (this.file !== null && this.file !== undefined)
     {
       const formData = new FormData();
       formData.append('files', this.file);
-      this.http.patch(this.appComponent.apiUrl + 'Users/Image?id_user=' + sessionStorage.getItem('m'), formData, {
+      this.http.patch(this.appComponent.apiUrl + 'Users/image?id_user=' + sessionStorage.getItem('m'), formData, {
         observe: 'response',
         headers: new HttpHeaders({
           Authorization: 'Bearer ' + sessionStorage.getItem('token')})
@@ -63,11 +85,34 @@ export class EditarPerfilComponent implements OnInit {
               if (res.status === 200)
               {
                 this.userImg = this.appComponent.apiUrl + 'Users?id_user=' + sessionStorage.getItem('m');
-                window.location.href = '/perfil';
+                window.location.href = '/';
               }
             }
           );
     }
+    else
+    {
+      this.http.delete(this.appComponent.apiUrl + 'Users/image?id_user=' + sessionStorage.getItem('m'), {
+        observe: 'response',
+        headers: new HttpHeaders({
+          Authorization: 'Bearer ' + sessionStorage.getItem('token')})
+          }).subscribe(
+            res =>
+            {
+              if (res.status === 200)
+              {
+                this.userImg = this.appComponent.apiUrl + 'Users?id_user=' + sessionStorage.getItem('m');
+                window.location.href = '/';
+              }
+            }
+          );
+
+    }
+  }
+
+  change(event: any): void
+  {
+
 
     if (this.oldpassword === undefined || this.oldpassword === null || this.oldpassword === '')
     {
@@ -92,7 +137,7 @@ export class EditarPerfilComponent implements OnInit {
 
     this.http.patch(this.appComponent.apiUrl +
       'Users/?id_user=' + sessionStorage.getItem('m') +
-      '&oldpass=' + this.oldpassword + '&newpass=' + this.passwordnew, null, {
+      '&oldpassword=' + this.oldpassword + '&password=' + this.passwordnew, null, {
         observe: 'response',
         responseType: 'json',
         headers: new HttpHeaders({

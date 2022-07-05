@@ -1,6 +1,7 @@
 package com.freetube.JavaFreetube.Models;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity
 @Table(name = "users")
@@ -20,11 +21,17 @@ public class Usuarios {
     public String correo;
     public String nombreyapellido;
     public String telefono;
-
+    public boolean hasdefaultimg;
+    public String description;
+    public Date fechaCreation;
     public Usuarios() {
     }
 
-    public Usuarios(int id_usuario, String usuario, String pass, int permiso, String imagepath, String correo, String nombreyapellido, String telefono) {
+    public Usuarios(int id_usuario, String usuario,
+                    String pass, int permiso, String imagepath, String correo,
+                    String nombreyapellido, String telefono, boolean hasdefaultimg,
+                    String description, Date fechaCreation)
+    {
         this.id_usuario = id_usuario;
         this.usuario = usuario;
         this.pass = pass;
@@ -33,6 +40,9 @@ public class Usuarios {
         this.correo = correo;
         this.nombreyapellido = nombreyapellido;
         this.telefono = telefono;
+        this.hasdefaultimg = hasdefaultimg;
+        this.description = description;
+        this.fechaCreation = fechaCreation;
     }
 
     public int getId_usuario() {
@@ -97,5 +107,29 @@ public class Usuarios {
 
     public void setTelefono(String telefono) {
         this.telefono = telefono;
+    }
+
+    public boolean isHasdefaultimg() {
+        return hasdefaultimg;
+    }
+
+    public void setHasdefaultimg(boolean hasdefaultimg) {
+        this.hasdefaultimg = hasdefaultimg;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Date getFechaCreation() {
+        return fechaCreation;
+    }
+
+    public void setFechaCreation(Date fechaCreation) {
+        this.fechaCreation = fechaCreation;
     }
 }

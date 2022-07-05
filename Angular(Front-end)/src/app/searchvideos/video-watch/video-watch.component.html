@@ -1,121 +1,126 @@
-<div class="vidList">
-  <h2 class="mainRecommendedTitle"> Recommended Videos </h2>
-  <div class="recommendedVideos" *ngFor="let video of videos">
-    <div (click)="openVid($event, video)" (auxclick)="openVid($event, video)">
-      <video class="recommendedVideosViews"
-      [attr.src]="video.linksrc | secure | async">
-      </video>
-      <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length > 24">
-        {{ video.title?.substring(0,22) }}
-      </h3>
-      <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length <= 24">
-        {{ video.title }}
-      </h3>
-      <div class="vidUser" (click)="openProfile(video.id_user)">
-        <img class="vidUserIMG" [attr.src]="video.imglinksrc | secure | async" >
-        <p  class="text-light text-start ml-5 vidUserText">
-          {{ video.usern }}
-        </p>
-      </div>
-    </div>
-
+<div *ngIf="!HasLoaded || !videoToWatchHasLoaded" class="loadingScreen">
+  <div class="spinner-border text-danger" role="status">
+      <span class="sr-only"></span>
   </div>
+  <label>
+    {{ LoadingMessage }}
+  </label>
 </div>
 
-
-<div [class.theRest1]="videos != null && videos.length === 1"
-  [class.theRest2]="videos != null && videos.length === 2"
-  [class.theRest3]="videos != null && videos.length === 3"
-  [class.theRest4]="videos != null && videos.length === 4"
-  [class.theRest5]="videos != null && videos.length === 5"
-  [class.theRest6]="videos != null && videos.length === 6"
-  [class.theRest7]="videos != null && videos.length === 7"
-  [class.theRest8]="videos != null && videos.length === 8"
-  >
-  <div class="videoContainerforView" id="videoContainerforView">
-    <video id="videoViewer"
-    class="videoViewer"  [attr.src]="src | secure | async" 
-    controls>
+<div [style.visibility]="(HasLoaded && videoToWatchHasLoaded) ? 'visible' :  'hidden'"
+     [class.fadeIn]="HasLoaded && videoToWatchHasLoaded" class="allbody">
+  <div class="sectionOfVideo">
+    <div [class.theRest]="videos != null && videos.length === 8">
+      <div class="videoContainerforView" id="videoContainerforView">
+        <video id="videoViewer"
+        class="videoViewer"  [attr.src]="src | secure | async"
+        loading="lazy"
+        (loadedmetadata)="loadedVideo()"
+        height="100%"
+        width="100%"
+        controls>
+        </video>
+    </div>
     
-    </video>
-</div>
-
-
-<div *ngIf="video !== undefined ">
-    <h1 class="title" maxlength="25">{{ video.title }}</h1>
-
+    
+    <div *ngIf="video !== undefined ">
+        <h1 class="title" maxlength="25">{{ video.title }}</h1>
+    
+        <hr class="description-div">
+    
+        <div class="inlineDescriptionAndButtons">
+          <div class="buttonsLikes">
+            <a> {{ video.views }} vistas </a>
+            <button [class.like]="liked !== 1" [class.alreadyLiked]="liked === 1" class="btn btn-dark" (click)="like()">
+              <i class="fa fa-thumbs-up" aria-hidden="true"></i>
+            </button>
+            <a> {{ video.likes }} </a>
+    
+            <button [class.dislike]="liked !== 0" [class.alreadyDisliked]="liked === 0" class="btn btn-dark" (click)="dislike()">
+              <i class="fa fa-thumbs-down" aria-hidden="true"></i>
+            </button>
+            <a> {{ video.dislikes }} </a>
+          </div>
+    
+          <div class="separator">Usuario</div>
+          <div class ="profileImageFullVideo" (click)="showProfile(video.id_user)">
+            <img class="profile-image-img" [attr.src]="video.srcImage | secure | async">
+            <p class="descriptionprofileImageFullVideo">
+              {{ video.usern }}
+            </p>
+          </div>
+          
+          <div class="separator">Descripción</div>
+    
+            <p class="description">
+              {{ video.description }}
+            </p>
+            <hr class="description-div">  
+            <p class="description">
+              {{ video.uploaded_since }}
+            </p>
+          </div>
+    </div>
+    
     <hr class="description-div">
+    
+    <form class="formUploadComments" action="" (submit)="submitComment($event)">
+      <h3 class="commentTitle"> Ingrese su comentario </h3>
+    
+      <textarea class="form-control textarea" name="commentText" id="" cols="100" rows="3"></textarea>
+    
+      <button class="btn btn-dark sbmtComment" type="submit">
+        <i class="fa fa-paper-plane" aria-hidden="true"></i>
+      </button>
+    </form>
+    
+    <hr class="description-div commentSection">
+    
+    <h3 class="commentTitle commentSectionTitle"> Sección de comentarios </h3>
+    
+    <hr class="description-div">
+    
+    <div >
+      <div class="comment" 
+       *ngFor="let comment of comments">
+    
+          <div class ="profile-image" (click)="showProfile(comment.id_user)">
+            <img class="profile-image-img" [attr.src]="comment.srcImage | secure | async">
+          </div>
+          <div class ="username">{{ comment.usern }}</div>
+          <div class ="user-comment">
+            <p>{{ comment.comment }}</p>
+            <div style ="clear:both;"></div>
+            <span>{{ comment.fecha_diff }}</span>
+          </div>
+    
+      </div> 
+    </div>
+    </div>
+  </div>
 
-    <div class="inlineDescriptionAndButtons">
-      <div class="buttonsLikes">
-        <a> {{ video.views }} vistas </a>
-        <button [class.like]="liked !== 1" [class.alreadyLiked]="liked === 1" class="btn btn-dark" (click)="like()">
-          <i class="fa fa-thumbs-up" aria-hidden="true"></i>
-        </button>
-        <a> {{ video.likes }} </a>
-
-        <button [class.dislike]="liked !== 0" [class.alreadyDisliked]="liked === 0" class="btn btn-dark" (click)="dislike()">
-          <i class="fa fa-thumbs-down" aria-hidden="true"></i>
-        </button>
-        <a> {{ video.dislikes }} </a>
+  <!-- recommended videos  -->
+  
+  <div class="vidList">
+    <h2 class="mainRecommendedTitle"> Recommended Videos </h2>
+    <div class="recommendedVideos" *ngFor="let video of videos">
+      <div (click)="openVid($event, video)" (auxclick)="openVid($event, video)" class="vidBackground">
+        <img class="recommendedVideosViews"
+        [attr.src]="video.linksrc | secure | async">
+        <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length > 24">
+          {{ video.title?.substring(0,22) }}
+        </h3>
+        <h3 class="header" class="vidTitle text-light text-start ml-5" style="text-decoration: none" *ngIf="video.title.length <= 24">
+          {{ video.title }}
+        </h3>
+        <div class="vidUser" (click)="openProfile(video.id_user)">
+          <img class="vidUserIMG" [attr.src]="video.imglinksrc | secure | async">
+          <p  class="text-light text-start ml-5 vidUserText">
+            {{ video.usern }}
+          </p>
+        </div>
       </div>
-
-      <div class="separator">Usuario</div>
-      <div class ="profileImageFullVideo" (click)="showProfile(video.id_user)">
-        <img class="profile-image-img" [attr.src]="video.srcImage | secure | async">
-        <p class="descriptionprofileImageFullVideo">
-          {{ video.username }}
-        </p>
-      </div>
-      <div class="separator">Descripción</div>
-
-        <p class="description">
-          {{ video.description }}
-        </p>
-        <hr class="description-div">  
-        <p class="description">
-          {{ video.uploaded_since }}
-        </p>
-      </div>
-</div>
-
-<hr class="description-div">
-
-<form class="formUploadComments" action="" (submit)="submitComment($event)">
-  <h3 class="commentTitle"> Ingrese su comentario </h3>
-
-  <textarea class="form-control textarea" name="commentText" id="" cols="100" rows="3"></textarea>
-
-  <button class="btn btn-dark sbmtComment" type="submit">
-    <i class="fa fa-paper-plane" aria-hidden="true"></i>
-  </button>
-</form>
-
-<hr class="description-div commentSection">
-
-<h3 class="commentTitle commentSectionTitle"> Sección de comentarios </h3>
-
-<hr class="description-div">
-
-<div [class.commentZero]="comments === null || comments.length === 0"
-  [class.oneComment]="comments !== null && comments.length === 1"
-  [class.twoComment]="comments !== null && comments.length === 2"
-  [class.others]="comments !== null && comments.length > 2 && comments.length < 6"
-  [class.others2]="comments !== null && comments.length >= 6 && comments.length < 12"
-  >
-  <div class="comment" 
-   *ngFor="let comment of comments">
-
-      <div class ="profile-image" (click)="showProfile(comment.id_user)">
-        <img class="profile-image-img" [attr.src]="comment.srcImage | secure | async">
-      </div>
-      <div class ="username">{{ comment.usern }}</div>
-      <div class ="user-comment">
-        <p>{{ comment.comment }}</p>
-        <div style ="clear:both;"></div>
-        <span>{{ comment.fecha_diff }}</span>
-      </div>
-
-  </div> 
-</div>
+  
+    </div>
+  </div>
 </div>

@@ -27,6 +27,7 @@ export class ProfileComponent implements OnInit {
   pageSize = 6;
   pageSizeOptions = [6];
   @Input() busquedavalue: any;
+  loading = false;
 
   reload(): void
   {
@@ -47,8 +48,7 @@ export class ProfileComponent implements OnInit {
       if (id === sessionStorage.getItem('m')) { this.permissionToDelete = true; }
       this.userImg = this.appComponent.apiUrl + 'Users?id_user=' + id;
 
-      this.userName = this.userInfo.usern;
-      this.http.get(this.appComponent.apiUrl + 'videos',
+      this.http.get(this.appComponent.apiUrl + 'Videos',
       {
       headers: {
         Authorization: 'Bearer ' + sessionStorage.getItem('token')
@@ -58,8 +58,12 @@ export class ProfileComponent implements OnInit {
       {
         this.videosOriginal = Response;
         this.videos = Response;
-        const usernames = this.userName;
-        this.videos = this.videos.filter((video: any) => video.usern === usernames);
+        this.videos = this.videos.filter((video: any) => video.id_user == id);
+        if (this.videos != null && this.videos !== undefined && this.videos.length > 0)
+        {
+          this.userName = this.videos[0].usern;
+        }
+
         this.videosOriginal.forEach((value: any) =>
         {
           if (value.description == null)
@@ -68,15 +72,13 @@ export class ProfileComponent implements OnInit {
           }
           value.descriptionLength = value.description != null ? value.description.length : 0;
 
-          value.linksrc = this.appComponent.apiUrl + 'videos/watch/?id=' + value.id_video;
+          value.linksrc = this.appComponent.apiUrl + 'Videos/physical?id=' + value.id_thumbnail;
 
           value.imglinksrc = this.appComponent.apiUrl + 'Users?id_user=' + value.id_user;
-
         });
+        this.loading = true;
       });
     }
-
-
   }
 
   OnPageChange(event: PageEvent): void{
@@ -104,7 +106,7 @@ export class ProfileComponent implements OnInit {
     }
   }
 
-  selectedVideoDelete(id_video: any): void
+  selectedVideoDelete({ id_video }: { id_video: any; }): void
   {
     this.vidToDelete = id_video;
   }

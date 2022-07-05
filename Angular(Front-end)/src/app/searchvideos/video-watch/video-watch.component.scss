@@ -6,11 +6,38 @@
     position: relative;
     margin-left: 5%;
     margin-right: auto;
-    margin-top: 2.5%;
     max-width: 600px;
     max-height: 337.5px;
     border: 1px solid black;
     border-radius: 5px;
+}
+
+
+.sectionOfVideo
+{
+  display: inline-flex;
+  flex-direction: row;
+  margin-right: auto;
+}
+
+.vidList
+{
+  position: relative;
+  max-width: 60%;
+  background-color: #212121;
+  margin-right: -25%;
+  margin-left: 25%;
+  margin-bottom: 5%;
+}
+
+.allbody
+{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow-x: hidden;
+  grid-column-gap: 0px;
+  margin-top: 2%;
+  align-items:flex-start;
 }
 
 .recommendedVideos
@@ -18,10 +45,14 @@
   cursor: pointer;
 }
 
+.vidBackground
+{
+  max-width: 100% !important;
+}
+
 .recommendedVideosViews
 {
     background-color: black;
-    margin-left: 5%;
     position: relative;
     max-width: 600px;
     max-height: 337.5px;
@@ -50,259 +81,184 @@
     margin-right: 51%;
 }
 
-.comment{
-    width:400px;
-    height:80px;
-    margin:10px auto;
-    background:white;
-    border-radius:5px;
-    margin-left: 5%;
-    margin-right: 51%;    
-  }
+.comment
+{
+  width:400px;
+  height:80px;
+  margin:10px auto;
+  background:white;
+  border-radius:5px;
+  margin-left: 5%;
+  margin-right: 51%;    
+}
   
 
-  .comment .username{
-    float:left;
-    color:#212121;
-    margin:15px 0px 0px 5px;
-    padding:0px;
-  }
-  
-  .comment .username:hover{
-    color:#757575;
-  }
-  
-  
-  .comment .user-comment{
-    margin:0px;
-    padding:0px;
-  }
-  
-  .comment .user-comment p{
-    color:#424242;
-    margin:0px;
-    padding:0px;
-    position:relative;
-    font-size:12px;
-    top:35px;
-    left:-36px;
-  }
-  
-  .comment .user-comment span{
-    color:#9E9E9E;
-    font-size:13px;
-    margin:0px;
-    padding:0px;
-    position:relative;
-    left:75px;
-    top:-13px;
-  }
-  
-  .comment .user-comment span:hover{
-    color:#616161;
-  }
-  
-  #ds p{
-    font-size:12px;
-    color:#212121;
-    opacity:0.6;
-  }
-  
-  #ds p:hover{
-    cursor:pointer;
-    opacity:1.0;
-  }
+.comment .username{
+  float:left;
+  color:#212121;
+  margin:15px 0px 0px 5px;
+  padding:0px;
+}
 
-  .buttonsLikes
-  {
-    margin-left: 5%;
-    margin-right: 51%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
+.comment .username:hover{
+  color:#757575;
+}
 
 
-  .inlineDescriptionAndButtons
-  {
-    margin-left: 3%;
-    margin-right: 51%;
-  }
+.comment .user-comment{
+  margin:0px;
+  padding:0px;
+}
 
-  .commentTitle
-  {
-    font-size: 30px;
-    font-family: 'Open Sans', sans-serif;
-  }
+.comment .user-comment p{
+  color:#424242;
+  margin:0px;
+  padding:0px;
+  position:relative;
+  font-size:12px;
+  top:35px;
+  left:-36px;
+}
 
-  .formUploadComments
-  {
-    margin-left: 5%;
-    margin-right: 51%;
-  }
+.comment .user-comment span{
+  color:#9E9E9E;
+  font-size:13px;
+  margin:0px;
+  padding:0px;
+  position:relative;
+  left:75px;
+  top:-13px;
+}
 
-  .textarea
-  {
-    resize: none;
-  }
-  
-  .sbmtComment
-  {
-    float: right;
-    margin-top: 1%;
-    margin-bottom: 5%;
-  }
+.comment .user-comment span:hover{
+  color:#616161;
+}
 
-  .commentSection
-  {
-    margin-top: 5%;
-  }
+#ds p{
+  font-size:12px;
+  color:#212121;
+  opacity:0.6;
+}
 
-  .commentSectionTitle
-  {
-    margin-left: 5%;
-    margin-right: 51%;
-  }
+#ds p:hover{
+  cursor:pointer;
+  opacity:1.0;
+}
 
-  .profile-image-img
-  {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
+.buttonsLikes
+{
+  margin-left: 5%;
+  margin-right: 51%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .comment .profile-image{
-    float:left;
-    width:60px;
-    height:60px;
-    margin:6px 0px 0px 6px;
-    border-radius:300px;
-  }
-  
-  .comment .profile-image:hover{
-    opacity:0.6;
-  }
-  
-  .like:hover
-  { 
-    background-color: #148F77;
-  }
 
-  .dislike:hover
-  {
-    background-color: #FF5252;
-  }
+.inlineDescriptionAndButtons
+{
+  margin-left: 3%;
+  margin-right: 51%;
+}
 
-  .alreadyDisliked
-  {
-    background-color: #FF5252;
-  }
-  
-  .alreadyDisliked:hover
-  {
-    background-color: #f7f7f7;
-  }
+.commentTitle
+{
+  font-size: 30px;
+  font-family: 'Open Sans', sans-serif;
+}
 
-  .alreadyLiked
-  {
-    background-color: #148F77;
-  }
-  
-  .alreadyLiked:hover
-  {
-    background-color: #f7f7f7;
-  }
+.formUploadComments
+{
+  margin-left: 5%;
+  margin-right: 51%;
+}
 
-  .vidList
-  {
-    position: relative;
-    margin-left: 68%;
-    margin-top: 1%;
-    background-color: #212121;
-  }
+.textarea
+{
+  resize: none;
+}
 
-  .mainRecommendedTitle
-  {
-    font-family: 'Open Sans', sans-serif;
-    font-size: large;
-    text-align: center;
-    margin-top: 1%;
-  }
+.sbmtComment
+{
+  float: right;
+  margin-top: 1%;
+  margin-bottom: 5%;
+}
+
+.commentSection
+{
+  margin-top: 5%;
+}
+
+.commentSectionTitle
+{
+  margin-left: 5%;
+  margin-right: 51%;
+}
+
+.profile-image-img
+{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.comment .profile-image{
+  float:left;
+  width:60px;
+  height:60px;
+  margin:6px 0px 0px 6px;
+  border-radius:300px;
+}
+
+.comment .profile-image:hover{
+  opacity:0.6;
+}
+
+.like:hover
+{ 
+  background-color: #148F77;
+}
+
+.dislike:hover
+{
+  background-color: #FF5252;
+}
+
+.alreadyDisliked
+{
+  background-color: #FF5252;
+}
+
+.alreadyDisliked:hover
+{
+  background-color: #f7f7f7;
+}
+
+.alreadyLiked
+{
+  background-color: #148F77;
+}
+
+.alreadyLiked:hover
+{
+  background-color: #f7f7f7;
+}
+
+
+.mainRecommendedTitle
+{
+  font-family: 'Open Sans', sans-serif;
+  font-size: large;
+  text-align: center;
+  margin-top: 1%;
+}
 
 
 
-  .theRest1
-  {
-    margin-top: -23%;
-    margin-bottom: 6.25%;
-  }
-  .theRest2
-  {
-    margin-top: -46%;
-    margin-bottom: 12.50%;
-  }
-  .theRest3
-  {
-    margin-top: -69%;
-    margin-bottom: 18.75%;
-  }
-  .theRest4
-  {
-    margin-top: -92%;
-    margin-bottom: 25%;
-  }
-  .theRest5
-  {
-    margin-top: -115%;
-    margin-bottom: 31.25%;
-  }
-  .theRest6
-  {
-    margin-top: -138%;
-    margin-bottom: 37.5%;
-  }
-
-  .theRest7
-  {
-    margin-top: -161%;
-    margin-bottom: 43.75%;
-  }
-  
-  .theRest8
-  {
-    margin-top: -184%;
-    margin-bottom: 50%;
-  }
-
-
-  .commentZero
-  {
-    margin-bottom: 125%;
-  }
-
-  .oneComment
-  {
-    margin-bottom: 128%;
-  }
-
-  .twoComment
-  {
-    margin-bottom: 130%;
-  }
-
-  .others
-  {
-    margin-bottom: 120%;
-  }
-
-  .others2
-  {
-    margin-bottom: 100%;
-  }
-
-  .vidUser
+.vidUser
 {
   z-index: 1;
   display: flex;
@@ -357,16 +313,18 @@
 
 .profileImageFullVideo
 {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   margin-left: 5%;
-  margin-bottom: 5%;
+  margin-right: 51%;
 }
-
 .descriptionprofileImageFullVideo
 {
-  margin-left: 10%;
-  margin-top: -6%;
+  margin-left: 1%;
+  margin-top: 2%;
 }
-
 
 .separator {
   display: flex;
@@ -389,48 +347,4 @@
 
 .separator:not(:empty)::after {
   margin-left: .25em;
-}
-
-// on 1080px do this
-@media screen and (min-width: 1080px) {
-  .theRest1
-  {
-    margin-top: -18%;
-    margin-bottom: 6.25%;
-  }
-  .theRest2
-  {
-    margin-top: -36%;
-    margin-bottom: 12.50%;
-  }
-  .theRest3
-  {
-    margin-top: -54%;
-    margin-bottom: 18.75%;
-  }
-  .theRest4
-  {
-    margin-top: -72%;
-    margin-bottom: 25%;
-  }
-  .theRest5
-  {
-    margin-top: -90%;
-    margin-bottom: 31.25%;
-  }
-  .theRest6
-  {
-    margin-top: -108%;
-    margin-bottom: 37.5%;
-  }
-  .theRest7
-  {
-    margin-top: -126%;
-    margin-bottom: 37.5%;
-  }
-  .theRest8
-  {
-    margin-top: -144%;
-    margin-bottom: 37.5%;
-  }
 }

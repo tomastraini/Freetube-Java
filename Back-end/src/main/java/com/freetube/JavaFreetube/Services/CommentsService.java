@@ -37,7 +37,7 @@ public class CommentsService implements ICommentsService
                     usuarios.stream().filter(u -> u.id_usuario == c.id_user).findFirst().orElseGet(new Supplier<Usuarios>() {
                         @Override
                         public Usuarios get() {
-                            return new Usuarios(0,"","",0,"","","","");
+                            return new Usuarios(0,"","",0,"","","","", true, "", null);
                         }
                     }).usuario,
                     c.fecha_carga

@@ -14,14 +14,14 @@ public class VideosDTO
     public long views;
     public Date fecha_carga;
     public int id_user;
+    public String videoWeight;
+    public String id_thumbnail;
 
     public VideosDTO(int id_video, String id_drive,
-
-    String title, String description, String usern, 
-
-    long likes, long dislikes, 
-    long views, Date fecha_carga, int id_user
-    ) {
+    String title, String description, String usern,
+    long likes, long dislikes,
+    long views, Date fecha_carga, int id_user, String videoWeight,
+                     String id_thumbnail) {
         this.id_video = id_video;
         this.id_drive = id_drive;
         this.title = title;
@@ -32,9 +32,27 @@ public class VideosDTO
         this.views = views;
         this.fecha_carga = fecha_carga;
         this.id_user = id_user;
+        this.videoWeight = videoWeight;
+        this.id_thumbnail = id_thumbnail;
     }
 
     public VideosDTO() {
+    }
+
+    public String getId_thumbnail() {
+        return id_thumbnail;
+    }
+
+    public void setId_thumbnail(String id_thumbnail) {
+        this.id_thumbnail = id_thumbnail;
+    }
+
+    public String getVideoWeight() {
+        return videoWeight;
+    }
+
+    public void setVideoWeight(String videoWeight) {
+        this.videoWeight = videoWeight;
     }
 
     public int getId_video() {

@@ -5,7 +5,10 @@ import com.freetube.JavaFreetube.Models.DriveModels.DriveVideos;
 import com.freetube.JavaFreetube.Models.Likes;
 import com.freetube.JavaFreetube.Models.Videos;
 import com.freetube.JavaFreetube.Services.Interfaces.IVideosService;
+import org.bytedeco.javacv.FrameGrabber;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +28,6 @@ public class VideosController
     {
         this.srv = srv;
     }
-
     @GetMapping
     public List<VideosDTO> getallVideos()
     {
@@ -63,7 +65,7 @@ public class VideosController
                               @RequestParam String title,
                               @RequestParam String description,
                               @RequestParam int id_user)
-            throws URISyntaxException, IOException, GeneralSecurityException {
+            throws URISyntaxException, IOException, GeneralSecurityException, FrameGrabber.Exception {
         return srv.insertVideo(file,title,description,id_user);
     }
 

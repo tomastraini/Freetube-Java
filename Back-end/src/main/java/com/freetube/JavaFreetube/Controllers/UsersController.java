@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
 
+import com.freetube.JavaFreetube.DTOs.UserDTOForSpecific;
 import com.freetube.JavaFreetube.Models.Usuarios;
 import com.freetube.JavaFreetube.Services.Interfaces.IUsersService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,12 @@ public class UsersController
         return srv.getImage(id_user);
     }
 
+    @GetMapping("specificUser")
+    public UserDTOForSpecific getSpecificUser(@RequestParam int id_user)
+    {
+        return srv.getSpecificUser(id_user);
+    }
+
     @PostMapping
     public Usuarios register(@RequestParam("files") MultipartFile file,
                              @RequestParam String username,
@@ -44,6 +51,17 @@ public class UsersController
                              @RequestParam String nombreyapellido,
                              @RequestParam String telefono) throws URISyntaxException, IOException, GeneralSecurityException
     {
+        return srv.register(file, username, password, correo,nombreyapellido,telefono);
+    }
+
+    @PostMapping("withOutImage")
+    public Usuarios registerWithoutImage(@RequestParam String username,
+                             @RequestParam String password,
+                             @RequestParam String correo,
+                             @RequestParam String nombreyapellido,
+                             @RequestParam String telefono) throws URISyntaxException, IOException, GeneralSecurityException
+    {
+        MultipartFile file = null;
         return srv.register(file, username, password, correo,nombreyapellido,telefono);
     }
 
@@ -60,5 +78,16 @@ public class UsersController
                                 @RequestParam("files") MultipartFile file) throws URISyntaxException, IOException, GeneralSecurityException
     {
         return srv.changeImage(id_user, file);
+    }
+    @DeleteMapping("/image")
+    public Usuarios deleteImage(@RequestParam int id_user) throws IOException, GeneralSecurityException
+    {
+        return srv.deleteImage(id_user);
+    }
+
+    @DeleteMapping
+    public Usuarios deleteUser(@RequestParam int id_user) throws GeneralSecurityException, IOException
+    {
+        return srv.deleteUser(id_user);
     }
 }

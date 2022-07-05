@@ -4,6 +4,7 @@ import com.freetube.JavaFreetube.DTOs.VideosDTO;
 import com.freetube.JavaFreetube.Models.DriveModels.DriveVideos;
 import com.freetube.JavaFreetube.Models.Likes;
 import com.freetube.JavaFreetube.Models.Videos;
+import org.bytedeco.javacv.FrameGrabber;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,7 +26,7 @@ public interface IVideosService
             throws URISyntaxException, IOException, GeneralSecurityException;
     public List<Videos> getVideosFromDBbyUser(int id_user);
     Videos insertVideo(MultipartFile file, String title, String description, int id_user)
-            throws URISyntaxException, IOException, GeneralSecurityException;
+            throws URISyntaxException, IOException, GeneralSecurityException, FrameGrabber.Exception;
     public Videos modifyVideo(Videos video);
     public void deleteVideo(String id)
             throws URISyntaxException, IOException, GeneralSecurityException;

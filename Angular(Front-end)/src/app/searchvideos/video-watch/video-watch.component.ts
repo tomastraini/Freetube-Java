@@ -22,6 +22,10 @@ export class VideoWatchComponent implements OnInit {
 
   videosOriginal: any;
   videos: any;
+  HasLoaded = false;
+  LoggedIn = false;
+  videoToWatchHasLoaded = false;
+  LoadingMessage = "Cargando...";
 
   reload(): void
   {
@@ -31,130 +35,191 @@ export class VideoWatchComponent implements OnInit {
     });
   }
 
+  loadedVideo()
+  {
+    console.log('loaded');
+    this.videoToWatchHasLoaded = true;
+  }
+
   ngOnInit(): void
   {
-      this.id = this.router.url.split('/')[2];
-      const newRoute = this.appComponent.apiUrl + 'Videos/' + this.id;
+    if (sessionStorage.getItem('x') != 'user')
+    {
+      this.LoggedIn = true;
+    }
 
-      this.http.get(newRoute,
+    let i = 0;
+    setInterval(() => {
+      i++;
+      if (this.videos !== undefined && this.videos !== null && this.videos.length > 0)
+      {
+        this.HasLoaded = true;
+      }
+      if (i > 2)
+      {
+        this.LoadingMessage = 'Autenticando...';
+      }
+      if (i > 2)
+      {
+        this.LoadingMessage = 'Autenticando...';
+      }
+      if (i > 5)
+      {
+        this.LoadingMessage = 'Cargando video...';
+      }
+      if (i > 7)
+      {
+        this.LoadingMessage = 'Descargando video...';
+      }
+      if (i > 10)
+      {
+        this.LoadingMessage = 'Cargando datos...';
+      }
+      if (i > 25)
+      {
+        this.LoadingMessage = 'Descargando recomendados...';
+      }
+      if (i > 35)
+      {
+        this.LoadingMessage = 'Seguimos descargando videos, por favor espere...';
+      }
+    }, 1000);
+
+    this.id = this.router.url.split('/')[2];
+    const newRoute = this.appComponent.apiUrl + 'Videos/' + this.id;
+
+    this.http.get(newRoute,
+    {
+      headers:
+      {
+        Authorization: 'Bearer ' + sessionStorage.getItem('token')
+      }
+    }).subscribe(res => {
+        if (res){
+          this.video = res;
+          const date = new Date(this.video.fecha_carga);
+          const now = new Date();
+          const diff = now.getTime() - date.getTime();
+          const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+          const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
+          const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 30 * 12));
+          if (years > 0)
+          {
+            this.video.uploaded_since = 'Hace ' + years + ' años';
+          }
+          else if (months > 0)
+          {
+            this.video.uploaded_since = 'Hace ' + months + ' meses';
+          }
+          else if (days > 0)
+          {
+            this.video.uploaded_since = 'Hace ' + days + ' días';
+          }
+          else
+          {
+            this.video.uploaded_since = 'Hace un momento';
+          }
+
+          this.video.srcImage = this.appComponent.apiUrl + 'Users?id_user=' + this.video.id_user;
+
+          this.src = this.appComponent.apiUrl + 'Videos/physical?id=' + this.video.id_drive;
+          if (sessionStorage.getItem('m') !== undefined && sessionStorage.getItem('m') !== null)
+          {
+            this.http.post(this.appComponent.apiUrl + 'Videos/getIfLiked?id_video=' +
+            this.video.id_video + '&id_user=' + sessionStorage.getItem('m'),
+            null,
+            {
+              headers:
+              {
+                Authorization: 'Bearer ' + sessionStorage.getItem('token')
+              }
+            }).subscribe(res2 => {
+                this.liked = res2;
+            });
+          }
+          else
+          {
+            this.liked = 3;
+          }
+
+
+          this.http.get<any[]>(this.appComponent.apiUrl + 'Comments?id_video='  + this.id, {
+            headers: {
+              Authorization: 'Bearer ' + sessionStorage.getItem('token')
+            }
+          })
+            .subscribe(res3 => {
+              if (res3){
+                  this.comments = res3;
+                  res3.forEach(element => {
+                    const diffComments = new Date().getTime() - new Date(element.fecha_carga).getTime();
+                    const daysComments = Math.floor(diffComments / (1000 * 60 * 60 * 24));
+                    const monthsComments = Math.floor(diffComments / (1000 * 60 * 60 * 24 * 30));
+                    const yearsComments = Math.floor(diffComments / (1000 * 60 * 60 * 24 * 30 * 12));
+                    if (yearsComments > 0){
+                      element.fecha_diff = yearsComments + ' years ago';
+                    }
+                    else if (monthsComments > 0){
+                      element.fecha_diff = monthsComments + ' months ago';
+                    }
+                    else if (daysComments > 0){
+                      element.fecha_diff = daysComments + ' days ago';
+                    }
+                    else{
+                      element.fecha_diff = 'today';
+                    }
+                  });
+                }
+          });
+        }
+    });
+    this.http.get(this.appComponent.apiUrl + 'Videos/top',
+    {
+    headers: {
+      Authorization: 'Bearer ' + sessionStorage.getItem('token')
+      }
+    }
+      )
+    .subscribe(
+      (Response) =>
+      {
+        this.videosOriginal = Response;
+        this.videos = Response;
+        console.log(this.videos.length);
+        this.videosOriginal.forEach((value: any) =>
+        {
+          if (value.description == null)
+          {
+            value.description = '';
+          }
+          value.descriptionLength = value.description != null ? value.description.length : 0;
+
+          value.linksrc = this.appComponent.apiUrl + 'Videos/physical?id=' + value.id_thumbnail;
+
+          value.imglinksrc = this.appComponent.apiUrl + 'Users?id_user=' + value.id_user;
+          this.HasLoaded = true;
+        });
+      });
+
+    this.http.post(this.appComponent.apiUrl + 'Videos/views?id_video=' + this.id + '&id_user=' + sessionStorage.getItem('m'),
+      null,
       {
         headers:
         {
           Authorization: 'Bearer ' + sessionStorage.getItem('token')
         }
       }).subscribe(res => {
-          if (res){
-            this.video = res;
-            const date = new Date(this.video.fecha_carga);
-            const now = new Date();
-            const diff = now.getTime() - date.getTime();
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
-            const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 30 * 12));
-            if (years > 0)
-            {
-              this.video.uploaded_since = years + ' años';
-            }
-            else if (months > 0)
-            {
-              this.video.uploaded_since = months + ' meses';
-            }
-            else if (days > 0)
-            {
-              this.video.uploaded_since = days + ' días';
-            }
-            else
-            {
-              this.video.uploaded_since = 'Hace un momento';
-            }
-
-            this.video.srcImage = this.appComponent.apiUrl + 'Users?id_user=' + this.video.id_user;
-
-            this.src = this.appComponent.apiUrl + 'Videos/physical?id=' + this.video.id_drive;
-            if (sessionStorage.getItem('m') !== undefined && sessionStorage.getItem('m') !== null)
-            {
-              this.http.post(this.appComponent.apiUrl + 'Videos/getIfLiked?id_video=' +
-              this.video.id_video + '&id_user=' + sessionStorage.getItem('m'),
-              null,
-              {
-                headers:
-                {
-                  Authorization: 'Bearer ' + sessionStorage.getItem('token')
-                }
-              }).subscribe(res2 => {
-                  this.liked = res2;
-              });
-            }
-            else
-            {
-              this.liked = 3;
-            }
-
-
-            this.http.get(this.appComponent.apiUrl + 'Comments?id_video='  + this.id, {
-              headers: {
-                Authorization: 'Bearer ' + sessionStorage.getItem('token')
-              }
-            })
-              .subscribe(res3 => {
-                if (res3){
-                    this.comments = res3;
-                    for (let i = 0; i < this.comments.length; i++){
-                      const date = new Date(this.comments[i].fecha_carga);
-                      const now = new Date();
-                      const diff = now.getTime() - date.getTime();
-                      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                      const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
-                      const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 30 * 12));
-                      if (years > 0){
-                        this.comments[i].fecha_diff = years + ' years ago';
-                      }
-                      else if (months > 0){
-                        this.comments[i].fecha_diff = months + ' months ago';
-                      }
-                      else if (days > 0){
-                        this.comments[i].fecha_diff = days + ' days ago';
-                      }
-                      else{
-                        this.comments[i].fecha_diff = 'today';
-                      }
-                    }
-                  }
-            });
-          }
+          console.log(res);
       });
-
-      this.http.get(this.appComponent.apiUrl + 'Videos/top',
-      {
-      headers: {
-        Authorization: 'Bearer ' + sessionStorage.getItem('token')
-        }
-      }
-        )
-      .subscribe(
-        (Response) =>
-        {
-          this.videosOriginal = Response;
-          this.videos = Response;
-          this.videosOriginal.forEach((value: any) =>
-          {
-            if (value.description == null)
-            {
-              value.description = '';
-            }
-            value.descriptionLength = value.description != null ? value.description.length : 0;
-
-            value.linksrc = this.appComponent.apiUrl + 'Videos/physical?id=' + value.id_drive;
-
-            value.imglinksrc = this.appComponent.apiUrl + 'Users?id_user=' + value.id_user;
-
-          });
-        });
-
   }
 
   submitComment(event: any): void
   {
+    if (this.LoggedIn === false)
+    {
+      window.location.href = '/login';
+      return;
+    }
     if (sessionStorage.getItem('m') !== null && sessionStorage.getItem('m') !== undefined)
     {
       const newRoute = this.appComponent.apiUrl + 'Comments';
@@ -209,7 +274,11 @@ export class VideoWatchComponent implements OnInit {
 
   like(): void
   {
-
+    if (this.LoggedIn === false)
+    {
+      window.location.href = '/login';
+      return;
+    }
     const options = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',
@@ -264,6 +333,11 @@ export class VideoWatchComponent implements OnInit {
 
   dislike(): void
   {
+    if (this.LoggedIn === false)
+    {
+      window.location.href = '/login';
+      return;
+    }
     const options = {
       headers: new HttpHeaders({
         'Content-Type': 'application/json',

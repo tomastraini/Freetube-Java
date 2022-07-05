@@ -1,15 +1,44 @@
     <h1 class="editProfileTitle">Editar perfil</h1>
     <div class="container" name="imageSelect" id="imageSelect">
         <div class="picture" name="imageSelect2" (click)="AbrirSelector()">
-            <img [attr.src]="userImg | secure | async" name="picus" class="picture-src"
-            id="wizardPicturePreview" title="">
-            <input type="file" id="wizard-picture" value= "" class="fotoASeleccionar"  (change)="readURL($event)" name="fotoASeleccionar">
+            <div [style.visibility]="userImgisEmpty ? 'visible' : 'hidden'">
+                <img [attr.src]="userImgOnChangedSRC == undefined && userImgOnChangedSRC == null ? 
+                (userImg | secure | async) : userImgOnChangedSRC" name="picus" class="picture-src"
+                id="wizardPicturePreview" title="">
+                <input type="file" id="wizard-picture" value="" class="fotoASeleccionar" 
+                (change)="readURL($event)" name="fotoASeleccionar" [style.visibility]="'hidden'">
+            </div>
+            <div [style.visibility]="!userImgisEmpty ? 'visible' : 'hidden'">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
         </div>
+
     </div>
     
     <div class="pencilShow" (click)="AbrirSelector()">
         <i class="fa fa-pencil border border-dark border-lg rounded-pill fa-lg bg-dark" aria-hidden="true"></i>
     </div>
+
+    <button  class="btn btn-danger acceptChange"  (click)="changeImageAlone()" *ngIf="file == null">
+        <i class="fa fa-times" aria-hidden="true"></i>
+        Borrar imagen
+    </button>
+
+    <div class="clearAndAccept">
+        <button  class="btn btn-danger"  (click)="changeImageAlone()" *ngIf="file != null">
+            <i class="fa fa-check" aria-hidden="true"></i>
+            Aceptar
+        </button>
+    
+    
+        <button  class="btn btn-danger limp"  (click)="clearImage()" *ngIf="file != null">
+            <i class="fa fa-times" aria-hidden="true"></i>
+            Limpiar imagen
+        </button>
+    </div>
+
     
     <div class="picture-container">
         <h6 class="border border-danger rounded-pill bg-dark SignalingTexts">Seleccionar foto de perfil</h6>

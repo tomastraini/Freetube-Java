@@ -1,26 +1,26 @@
 package com.freetube.JavaFreetube.Configurations;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtTokenUtil implements Serializable {
 
 	private static final long serialVersionUID = -2550185165626007488L;
 
-	// 5 hours of token
-	public static final long JWT_TOKEN_VALIDITY = 5*60*60;
+	// 5 hours of token = 5*60*60
+	public static final long JWT_TOKEN_VALIDITY = 1*30*30;
 
 	@Value("${jwt.secret}")
 	private String secret;
@@ -58,15 +58,34 @@ public class JwtTokenUtil implements Serializable {
 
 	public String generateToken(UserDetails userDetails) {
 		Map<String, Object> claims = new HashMap<>();
-		return doGenerateToken(claims, userDetails.getUsername());
+		final String authorities = userDetails.getAuthorities().stream()
+				.map(GrantedAuthority::getAuthority)
+				.collect(Collectors.joining(","));
+
+		return Jwts.builder()
+				.setSubject(userDetails.getUsername())
+				.claim("rol", authorities)
+				.signWith(SignatureAlgorithm.HS256, secret)
+				.setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000))
+				.compact();
 	}
 
-	private String doGenerateToken(Map<String, Object> claims, String subject) {
+	UsernamePasswordAuthenticationToken getAuthentication(final String token, final Authentication existingAuth, final UserDetails userDetails) {
 
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY*1000)).signWith(SignatureAlgorithm.HS512, secret).compact();
+		final JwtParser jwtParser = Jwts.parser().setSigningKey(secret);
+
+		final Jws<Claims> claimsJws = jwtParser.parseClaimsJws(token);
+
+		final Claims claims = claimsJws.getBody();
+
+		final Collection authorities =
+				Arrays.stream(claims.get("rol").toString().split(","))
+						.map(SimpleGrantedAuthority::new)
+						.collect(Collectors.toList());
+
+		return new UsernamePasswordAuthenticationToken(userDetails, "", authorities);
 	}
-
 	public Boolean canTokenBeRefreshed(String token) {
 		return (!isTokenExpired(token) || ignoreTokenExpiration(token));
 	}
